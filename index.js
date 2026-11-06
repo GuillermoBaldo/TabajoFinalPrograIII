@@ -6,8 +6,7 @@ import connection from "./src/api/database/db.js";
 
 const app = express();
 const PORT = 4000;
-
-// Middleware para permitir peticiones CORS (muy recomendado) hola
+//hola
 app.use(cors());
 app.use(express.json());
 
