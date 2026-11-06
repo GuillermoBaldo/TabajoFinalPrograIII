@@ -42,7 +42,8 @@ CREATE TABLE `productos` (
 
 INSERT INTO `productos` (`id`, `nombre`, `imagen`, `categoria`, `precio`, `activo`) VALUES
 (1, 'remera azul', 'imagen', 'verano', 300, 1),
-(2, 'remera roja', 'imagen2', 'verano', 201, 1);
+(2, 'remera roja', 'imagen2', 'verano', 201, 1),
+(3, 'remera amarilla', 'imagen3', 'verano', 201, 1);
 
 --
 -- Índices para tablas volcadas
