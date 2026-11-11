@@ -1,7 +1,7 @@
 console.log("hola desde js")
 
 const contenedorProductos = document.getElementById("contenedor-productos");
-const urlBase = "http://localhost:4000/";
+const urlBase = "http://localhost:4000";
 
 
 async function obtenerProductos() {
@@ -28,11 +28,11 @@ function renderizarProductos(array) {
 
     array.forEach(prod => {
         htmlProducto +=`
-            <div class="card-producto">
-                <img class="card-img" src="${prod.image}" alt="${prod.name}">
-                    <h4>${prod.name}</h4>
-                    <p>Id: ${prod.id}</p>
-                    <p>$ ${prod.price}</p>
+            <div class="carta-producto">
+                <img class="card-img" src="${prod.imagen}" alt="${prod.nombre}">
+                    <h4>${prod.nombre}</h4>
+                    <p>$ ${prod.precio}</p>
+                    <button onclick"agregarCarrito">Agregar al carrito</button>
             </div>`
             ;
     });

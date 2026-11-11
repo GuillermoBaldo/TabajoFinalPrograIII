@@ -1,48 +1,142 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script defer src="principal.js"></script>
-    <link rel="stylesheet" href="./css/styles.css">
-    <title>tiendaDeRopa</title>
+    <title>Bienvenida</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .card h1 {
+            color: #2d3748;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #718096;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .greeting-message {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e6fffa;
+            border: 1px solid #b2f5ea;
+            color: #234e52;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
-    <header>
-        <div>
-            <img src="" alt="icono">
-        </div>
-        <nav class="navegador">
-            <ul class="lista">
-                <li><a href="index.html">Principal</a></li>
-                <li><a href="Crud.html">CRUD</a></li>
-            </ul>
-        </nav>
-        <div>
-            <input type="text" name="buscador" id="buscador" placeholder="buscar productos...">
-        </div>
-        <div>
-            <button class="boton">Login</button>
-        </div>
-        <div>
-            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Cambiar tema"> Modo Oscuro</button>
-        </div>
-    </header>
-    <main>
-        <div>
-            <h1>Nuestros Productos</h1>
-        </div>
-        <section id="contenedor-productos">
-            <article class="carta-producto">
-                
-            </article>
-        </section>
-    </main>
-    <footer>
 
-    </footer>
+    <div class="card">
+        <h1>¡Te damos la bienvenida! 👋</h1>
+        <p>Por favor, ingresá tu nombre para continuar.</p>
+
+        <form id="welcome-form" class="form-group">
+            <input type="text" id="user-name" class="input-field" placeholder="Escribí tu nombre..." required
+                autocomplete="off">
+            <button type="submit" class="btn-submit" onclick="redirigir()">Ingresar</button>
+        </form>
+
+        <div id="greeting" class="greeting-message"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('welcome-form');
+        const input = document.getElementById('user-name');
+        const greeting = document.getElementById('greeting');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = input.value.trim();
+            if (name) {
+                greeting.textContent = `¡Hola, ${name}! Te damos la bienvenida.`;
+                greeting.style.display = 'block';
+                form.style.display = 'none';
+            }
+        });
+
+        async function redirigir(){
+            const esperar = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+            await esperar (3000);
+            location.href = "principal.html"
+        }
+    </script>
 </body>
 
 </html>
