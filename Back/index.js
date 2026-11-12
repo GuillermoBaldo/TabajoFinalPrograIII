@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
 
-import enviroment from "./src/api/config/enviroment.js";
-import connection from "./src/api/database/db.js";
-import { loggerUrl, validateId } from "./src/api/middlewares/middlewares.js";
+import enviroment from "./api/config/enviroment.js";
+import connection from "./api/database/db.js";
+import { loggerUrl, validateId } from "./api/middlewares/middlewares.js";
 
 const app = express();
 const PORT = 4000;
