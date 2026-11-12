@@ -3,6 +3,7 @@ import cors from "cors";
 
 import enviroment from "./src/api/config/enviroment.js";
 import connection from "./src/api/database/db.js";
+import { loggerUrl, validateId } from "./src/api/middlewares/middlewares.js";
 
 const app = express();
 const PORT = 4000;
@@ -14,67 +15,7 @@ app.use(cors()); // Middleware CORS basico para permitir todas las solicitudes
 app.use(express.json()); // Middleware para parsear el JSON recibido en el cuerpo de las solicitudes POST y PUT
 
 // Middleware logger para analizar las solicitudes por la consola
-app.use((req, res, next) => {
-    const fecha = new Date();
-    console.log(`[${fecha.toLocaleDateString()} ${fecha.toLocaleTimeString()}] ${req.method} ${req.url}`);
-    next(); // Pasa al siguiente middleware (si lo hay) o a la respuesta
-});
-
-// Middleware (de ruta) para filtrar ids no validos
-const validateId = (req, res, next) => {
-
-    const id = Number(req.params.id);
-
-    if (!Number.isInteger(id) || id <= 0) {
-        return res.status(400).json({
-            message: "El id debe ser un numero entero positivo"
-        });
-    }
-
-    req.id = id;
-    next(); // Damos paso al siguiente middleware o a la response
-}
-
-// Middleware (de ruta) para validar la informacion de los formularios
-const validateProduct = (req, res, next) => {
-
-    const categoriasValidas = ["verano", "invierno"];
-    const errores = [];
-
-    const {nombre, imagen, precio, categoria} = req.body;
-
-    // Verificamos que mandamos todos los campos
-    if (!nombre || !imagen || !precio || !categoria) {
-        errores.push("Faltan campos requeridos");
-    }
-
-    // Verificamos el campo nombre
-    if (typeof nombre !== "string" || nombre.trim().length < 2) {
-        errores.push("El nombre debe tener al menos 2 caracteres");
-    }
-
-    // Verificamos el campo precio
-    if (typeof precio !== "number" || precio <= 0) {
-        errores.push("El precio debe ser un numero mayor a 0");
-    }
-
-    // No validaremos imagen porque luego usaremos Multer
-
-    // Verificaremos el campo categoria
-    if(!categoriasValidas.includes(categoria)) {
-        errores.push("Categoria invalida");
-    }
-
-    // Si hay algun error en la lista, directamente devolvemos un 400
-    if (errores.length > 0) {
-        return res.status(400).json({
-            message: "Datos invalidos",
-            listaErrores: errores
-        });
-    }
-
-    next(); // Damos paso al siguiente middleware o a la response
-}
+app.use(loggerUrl)
 
 
 
