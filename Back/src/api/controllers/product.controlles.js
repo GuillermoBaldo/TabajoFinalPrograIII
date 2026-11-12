@@ -78,7 +78,7 @@ export const getProductById = async (req, res) => {
 // POST product
 export const createProduct = async (req, res) => {
 
-    // Optimizacion 2: Manejo de errores con try catch
+    // Optimización 2: Manejo de errores con try catch
     try {
         // Hacemos el destructuring de un objeto que parseamos previamente a traves del middleware express.json()
         const { categoria, imagen, nombre, precio } = req.body;
@@ -89,18 +89,18 @@ export const createProduct = async (req, res) => {
 
         res.status(201).json({
             message: "Producto creado exitosamente",
-            productId: rows.insertId // Optimizacion 4: Le pasamos el nuevo id del prod
+            productId: rows.insertId // Optimización 4: Le pasamos el nuevo id del prod
         });
 
     } catch (error) {
         console.log("Error creando un producto: ", error);
 
-        // Optimizacion 3: Error 500 si fallo la conexion a la BBDD
+        // Optimización 3: Error 500 si falló la conexión a la BBDD
         res.status(500).json({
             message: "Error interno del servidor"
         });
     }
-}
+};
 
 
 
@@ -108,18 +108,19 @@ export const createProduct = async (req, res) => {
 // PUT product
 export const modifyProduct = async (req, res) => {
 
-    // Optimizacion 2: Manejo de errores con try catch
+    // Optimización 2: Manejo de errores con try catch
     try {
-        // Hacemos el destructuring de un objeto que parseamos previamente a traves del middleware express.json()
-        const { categoria, imagen, nombre, precio, activo, id } = req.body;
+        // Desestructuramos los campos en español (con activo = 1 por defecto si no viene)
+        const { categoria, imagen, nombre, precio, activo = 1, id } = req.body;
     
+        // Mantenemos el orden exacto de argumentos: (nombre, imagen, precio, categoria, activo, id)
         const [result] = await ProductModels.updateProduct(nombre, imagen, precio, categoria, activo, id);
 
         console.log(result);
 
         if (result.changedRows === 0) {
             return res.status(404).json({
-                message: "No se actualizo el producto"
+                message: "No se actualizó el producto o no hubo cambios"
             });
         }
         
@@ -128,16 +129,14 @@ export const modifyProduct = async (req, res) => {
         });
 
     } catch (error) {
-        console.log("Error creando un producto: ", error);
+        console.log("Error actualizando un producto: ", error);
 
-        // Optimizacion 3: Error 500 si fallo la conexion a la BBDD
+        // Optimización 3: Error 500 si falló la conexión a la BBDD
         res.status(500).json({
             message: "Error interno del servidor"
         });
     }
-}
-
-
+};
 
 /////////////////////////
 // DELETE product

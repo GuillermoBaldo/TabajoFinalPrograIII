@@ -267,37 +267,49 @@ btnCrear.addEventListener("click", () => {
     modal.style.display = "flex";
 });
 
-// CERRAR MODAL
+// CERRAR MODAL (con el botón Cancelar)
 btnCerrar.addEventListener("click", () => {
+    formCrear.reset();
     modal.style.display = "none";
 });
 
+// CERRAR MODAL (si hacés clic afuera del cuadro)
+modal.addEventListener("click", event => {
+    if (event.target === modal) {
+        formCrear.reset();
+        modal.style.display = "none";
+    }
+});
 
-// CREAR PRODUCTO
+// CREAR PRODUCTO (POST)
 formCrear.addEventListener("submit", async event => {
 
-    event.preventDefault();
+    event.preventDefault(); // Evitamos el envío por defecto del <form>
 
-    // Obtenemos los datos del formulario
+    // Obtenemos la data del formulario
     const formData = new FormData(event.target);
+    console.log(formData);
 
-    // Convertimos FormData en objeto
+    // Transformamos este objeto nativo del <form> en un objeto literal JS
     const formObj = Object.fromEntries(formData.entries());
 
-    // Convertimos los datos
-    formObj.price = Number(formObj.price);
-    formObj.name = formObj.name.trim();
+    // Optimización 3: Cambiamos algunos datos del formulario
+    formObj.precio = Number(formObj.precio); // Convertimos el precio en un número para poder validarlo como tal
+    formObj.nombre = formObj.nombre.trim();
+    formObj.imagen = formObj.imagen.trim();
+    console.log(formObj);
 
-    // Validamos los datos
+    // El objeto con la info del formulario se lo pasamos a la función para validar los campos
     const errores = validarFormulario(formObj);
 
+    console.log(errores);
+
+    // Si hay errores, mostramos mensaje de error y terminamos acá, no hacemos la petición
     if (errores.length > 0) {
-        alert(errores.join("\n"));
-        return;
+        return mostrarListaErrores(errores);
     }
 
     try {
-
         const response = await fetch(`${urlBase}/api/products`, {
             method: "POST",
             headers: {
@@ -306,23 +318,29 @@ formCrear.addEventListener("submit", async event => {
             body: JSON.stringify(formObj)
         });
 
+        // Mostramos por consola la respuesta cruda del servidor
+        console.log(response);
+
+        // Parseamos el JSON del body de la response para poder acceder al valor de message
         const data = await response.json();
 
+        // Optimización 4: Filtramos errores 400 o 500
         if (!response.ok) {
-            alert(data.message);
-            return;
+            modal.style.display = "none";
+            return mostrarMensaje("error", data.message);
         }
 
-        alert("Producto creado correctamente");
-
+        let mensajeExito = `${data.message} con id ${data.productId}`;
+        
         formCrear.reset();
         modal.style.display = "none";
-
-        obtenerProductos();
+        mostrarMensaje("exito", mensajeExito); // Producto creado exitosamente con su ID
+        setTimeout(obtenerProductos, 1500); // Recargamos la tabla después de mostrar el mensaje
 
     } catch (error) {
-        console.error("Error al crear producto:", error);
-        alert("Error al enviar la información");
+        console.error("Error al hacer la solicitud: ", error);
+        modal.style.display = "none";
+        mostrarMensaje("error", "Error al enviar la información");
     }
 });
 
@@ -331,13 +349,16 @@ function validarFormulario(data) {
     const errores = [];
 
     if (!data.nombre || !data.imagen || !data.precio || !data.categoria) {
+    if (!data.nombre || !data.imagen || !data.precio || !data.categoria) {
         errores.push("Faltan campos requeridos");
     }
 
     if (!data.nombre || data.nombre.trim().length < 2) {
+    if (!data.nombre || data.nombre.trim().length < 2) {
         errores.push("El nombre debe tener al menos 2 caracteres");
     }
 
+    if (!data.imagen) {
     if (!data.imagen) {
         errores.push("Debe incluirse una imagen");
     }
@@ -346,6 +367,7 @@ function validarFormulario(data) {
         errores.push("El precio debe ser mayor a 0");
     }
 
+    if (!data.categoria) {
     if (!data.categoria) {
         errores.push("Debe seleccionar una categoría");
     }

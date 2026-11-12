@@ -39,10 +39,12 @@ const validateProduct = (req, res, next) => {
 
     // Verificamos que mandamos todos los campos
     if (!nombre || !imagen || !precio || !categoria) {
+    if (!nombre || !imagen || !precio || !categoria) {
         errores.push("Faltan campos requeridos");
     }
 
     // Verificamos el campo nombre
+    if (typeof nombre !== "string" || nombre.trim().length < 2) {
     if (typeof nombre !== "string" || nombre.trim().length < 2) {
         errores.push("El nombre debe tener al menos 2 caracteres");
     }
@@ -52,24 +54,21 @@ const validateProduct = (req, res, next) => {
         errores.push("El precio debe ser un numero mayor a 0");
     }
 
-    // No validaremos image porque luego usaremos Multer
-
-    // Verificaremos el campo category
-    if(!categoriasValidas.includes(categoria)) {
-        errores.push("Categoria invalida");
+    // Verificamos el campo categoria
+    if (!categoriasValidas.includes(categoria)) {
+        errores.push("Categoría inválida (debe ser Invierno o Verano)");
     }
 
-    // Si hay algun error en la lista, directamente devolvemos un 400
+    // Si hay algún error en la lista, devolvemos un 400
     if (errores.length > 0) {
         return res.status(400).json({
-            message: "Datos invalidos",
+            message: "Datos inválidos",
             listaErrores: errores
         });
     }
 
-    next(); // Damos paso al siguiente middleware o a la response
-}
-
+    next();
+};
 
 export {
     loggerUrl,
