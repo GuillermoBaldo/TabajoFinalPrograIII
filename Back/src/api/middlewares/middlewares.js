@@ -32,30 +32,30 @@ const validateId = (req, res, next) => {
 // Middleware (de ruta) para validar la informacion de los formularios
 const validateProduct = (req, res, next) => {
 
-    const categoriasValidas = ["food", "drink"];
+    const categoriasValidas = ["invierno", "verano"];
     const errores = [];
 
-    const {name, image, price, category} = req.body;
+    const {nombre, imagen, precio, categoria} = req.body;
 
     // Verificamos que mandamos todos los campos
-    if (!name || !image || !price || !category) {
+    if (!nombre || !imagen || !precio || !categoria) {
         errores.push("Faltan campos requeridos");
     }
 
     // Verificamos el campo nombre
-    if (typeof name !== "string" || name.trim().length < 2) {
+    if (typeof nombre !== "string" || nombre.trim().length < 2) {
         errores.push("El nombre debe tener al menos 2 caracteres");
     }
 
     // Verificamos el campo precio
-    if (typeof price !== "number" || price <= 0) {
+    if (typeof precio !== "number" || precio <= 0) {
         errores.push("El precio debe ser un numero mayor a 0");
     }
 
     // No validaremos image porque luego usaremos Multer
 
     // Verificaremos el campo category
-    if(!categoriasValidas.includes(category)) {
+    if(!categoriasValidas.includes(categoria)) {
         errores.push("Categoria invalida");
     }
 

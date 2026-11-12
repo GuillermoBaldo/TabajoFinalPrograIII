@@ -3,12 +3,18 @@ console.log("crud.js cargado correctamente");
 const listadoProductos = document.getElementById("lista-productos");
 const buscador = document.getElementById("buscador");
 // const urlBase = "http://localhost:4000"; // Ya está declarada en principal.js
+const formModificador = document.getElementById("contenedor-form");
+
+
+let productosGlobales = [];
 
 async function obtenerProductos() {
     try {
         const response = await fetch(`${urlBase}/api/products`);
         const data = await response.json();
         const productos = data.payload;
+
+        productosGlobales = data.payload;
 
         renderizarProductos(productos);
     } catch (error) {
@@ -81,7 +87,7 @@ function renderizarProductos(array) {
                 <td class="nombre-producto">${prod.nombre}</td>
                 <td class="precio-producto">$ ${prod.precio}</td>
                 <td class="acciones">
-                    <button class="btn-modificar" onclick="modificarProducto(${prod.id})">
+                    <button class="btn-modificar" onclick="iniciarModificacion(${prod.id})">
                         Modificar
                     </button>
                     <button class="btn-eliminar" onclick="eliminarProducto(${prod.id})">
@@ -101,6 +107,120 @@ function renderizarProductos(array) {
     listadoProductos.innerHTML = htmlTabla;
 }
 
+function iniciarModificacion(id) {
+    // Buscamos el producto exacto usando el ID que mandó el botón
+    const productoEncontrado = productosGlobales.find(prod => prod.id === id);
+
+    if (!productoEncontrado) {
+        return alert("Error: No se encontró el producto.");
+    }
+
+    const confirmacion = confirm(`¿Querés actualizar el producto: ${productoEncontrado.nombre}?`);
+
+    if (!confirmacion) {
+        alert("Modificacion cancelada");
+    } else {
+        // Le pasamos el objeto completo al formulario
+        renderizarFormModificar(productoEncontrado);
+    }
+}
+
+function renderizarFormModificar(producto) {
+    let htmlForm = `
+                <h4>Actualizar producto</h4>
+
+                <form id="updateProductForm">
+
+                    <input type="hidden" name="id" value="${producto.id}">
+
+                    <label for="categoriaProd">Categoria</label>
+                    <select name="categoria" id="categoriaProd" required>
+                        <option value="invierno">Invierno</option>
+                        <option value="verano">Verano</option>
+                    </select>
+
+                    <label for="imagenProd">Imagen</label>
+                    <input type="text" name="imagen" id="imagenProd" value="${producto.imagen}" required>
+
+                    <label for="nombreProd">Nombre</label>
+                    <input type="text" name="nombre" id="nombreProd" value="${producto.nombre}" required>
+
+                    <label for="precioProd">Precio</label>
+                    <input type="number" name="precio" id="precioProd" min="1" value="${producto.precio}" required>
+
+                    <label for="activoProd">Activo</label>
+                    <select name="activo" id="activoProd" required>
+                        <option value="1">Activo</option>
+                        <option value="0">Inactivo</option>
+                    </select>
+
+                    <input type="submit" value="Actualizar producto">
+
+                </form>
+            `;
+
+    formModificador.innerHTML = htmlForm;
+
+    const updateProductForm = document.getElementById("updateProductForm");
+
+    updateProductForm.addEventListener("submit", event => {
+        actualizarProducto(event);
+    });
+}
+
+async function actualizarProducto(event) {
+    event.preventDefault(); // Evitamos el envio por defecto del formulario
+
+    const formData = new FormData(event.target);
+    const formObj = Object.fromEntries(formData.entries());
+
+    // Optimizacion 5: Cambiamos algunos datos del formulario
+    formObj.id = Number(formObj.id);           // FALTABA ESTO
+    formObj.activo = Number(formObj.activo);   // FALTABA ESTO
+    formObj.precio = Number(formObj.precio);
+    formObj.nombre = formObj.nombre.trim();
+    formObj.categoria = formObj.categoria.trim();
+    console.log(formObj);
+
+    const errores = validarFormulario(formObj);
+    console.log(errores);
+
+    if (errores.length > 0) {
+        return mostrarListaErrores(errores);
+    }
+
+    console.table(formObj);
+
+    try {
+        const response = await fetch(`${urlBase}/api/products`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formObj)
+        });
+
+        console.log(response);
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error(data.message);
+            return mostrarMensaje("error", data.message);
+        }
+
+        console.log(data.message);
+
+        // Ocultamos el formulario al terminar
+        formModificador.innerHTML = "";
+        mostrarMensaje("exito", data.message);
+        setTimeout(obtenerProductos, 1500);
+
+    } catch (error) {
+        console.error("Error al enviar los datos:", error);
+        mostrarMensaje("error", "Error al enviar la informacion");
+    }
+}
 
 async function eliminarProducto(id) {
 
@@ -210,23 +330,23 @@ function validarFormulario(data) {
 
     const errores = [];
 
-    if (!data.name || !data.image || !data.price || !data.category) {
+    if (!data.nombre || !data.imagen || !data.precio || !data.categoria) {
         errores.push("Faltan campos requeridos");
     }
 
-    if (!data.name || data.name.trim().length < 2) {
+    if (!data.nombre || data.nombre.trim().length < 2) {
         errores.push("El nombre debe tener al menos 2 caracteres");
     }
 
-    if (!data.image) {
+    if (!data.imagen) {
         errores.push("Debe incluirse una imagen");
     }
 
-    if (typeof data.price !== "number" || data.price <= 0) {
+    if (typeof data.precio !== "number" || data.precio <= 0) {
         errores.push("El precio debe ser mayor a 0");
     }
 
-    if (!data.category) {
+    if (!data.categoria) {
         errores.push("Debe seleccionar una categoría");
     }
 

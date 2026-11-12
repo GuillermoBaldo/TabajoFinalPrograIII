@@ -81,9 +81,9 @@ export const createProduct = async (req, res) => {
     // Optimizacion 2: Manejo de errores con try catch
     try {
         // Hacemos el destructuring de un objeto que parseamos previamente a traves del middleware express.json()
-        const { category, image, name, price } = req.body;
+        const { categoria, imagen, nombre, precio } = req.body;
     
-        const [rows] = await ProductModels.insertNewProduct(name, image, category, price);
+        const [rows] = await ProductModels.insertNewProduct(nombre, imagen, categoria, precio);
 
         console.log(rows);
 
@@ -111,9 +111,9 @@ export const modifyProduct = async (req, res) => {
     // Optimizacion 2: Manejo de errores con try catch
     try {
         // Hacemos el destructuring de un objeto que parseamos previamente a traves del middleware express.json()
-        const { category, image, name, price, active, id } = req.body;
+        const { categoria, imagen, nombre, precio, activo, id } = req.body;
     
-        const [result] = await ProductModels.updateProduct(name, image, price, category, active, id);
+        const [result] = await ProductModels.updateProduct(nombre, imagen, precio, categoria, activo, id);
 
         console.log(result);
 
