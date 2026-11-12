@@ -42,11 +42,10 @@ buscador.addEventListener("submit", async event => {
             return mostrarMensaje(data.message);
         }
 
-        // Corregido: soporta tanto si payload viene como objeto único o como array
-        const producto = data.payload;
+        // Tomamos el primer (y único) elemento del arreglo
+        const producto = data.payload[0];
 
-
-        // Reemplaza la tabla en pantalla mostrando solo el producto encontrado
+        // Ahora sí lo envolvemos en un arreglo para el forEach
         renderizarProductos([producto]);
 
     } catch (error) {
