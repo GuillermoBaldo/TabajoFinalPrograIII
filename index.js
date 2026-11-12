@@ -41,7 +41,7 @@ app.get("/api/products", async (req, res) => {
                 message: "No se encontraron productos"
             });
         }
-    
+
         res.status(200).json({
             payload: rows
         });
@@ -80,6 +80,37 @@ app.get("/api/products/:id", validateId, async (req, res) => {
 
     } catch (error) {
         console.log("Error obteniendo productos por id: ", error);
+
+        res.status(500).json({
+            message: "Error interno del servidor"
+        });
+    }
+});
+
+app.delete("/api/products/:id", validateId, async (req, res) => {
+    // Usamos req.id que ya fue parseado y validado como entero por validateId
+    const id = req.id;
+
+    try {
+        // Acá sí usamos el signo ? como placeholder para evitar inyección SQL
+        const sql = "DELETE FROM productos WHERE id = ?";
+
+        // Pasamos el id como segundo parámetro en un arreglo
+        const [result] = await connection.query(sql, [id]);
+
+        // affectedRows nos dice cuántas filas fueron eliminadas
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                message: `No se encontró producto con id: ${id} para eliminar`
+            });
+        }
+
+        res.status(200).json({
+            message: `Producto con id: ${id} eliminado exitosamente`
+        });
+
+    } catch (error) {
+        console.log("Error eliminando producto por id: ", error);
 
         res.status(500).json({
             message: "Error interno del servidor"

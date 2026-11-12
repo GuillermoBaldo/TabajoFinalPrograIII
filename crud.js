@@ -13,11 +13,11 @@ async function obtenerProductos() {
         renderizarProductos(productos);
     } catch (error) {
         console.error("Error al hacer la solicitud: ", error);
-        mostrarError("Error al cargar los productos");
+        mostrarMensaje("Error al cargar los productos");
     }
 }
 
-function mostrarError(message) {
+function mostrarMensaje(message) {
     // Corregido: usar listadoProductos en lugar de contenedorProductos
     listadoProductos.innerHTML = `
         <p class="mensaje error">${message}</p>
@@ -39,7 +39,7 @@ buscador.addEventListener("submit", async event => {
         const data = await response.json();
 
         if (!response.ok) {
-            return mostrarError(data.message);
+            return mostrarMensaje(data.message);
         }
 
         // Corregido: soporta tanto si payload viene como objeto único o como array
@@ -51,7 +51,7 @@ buscador.addEventListener("submit", async event => {
 
     } catch (error) {
         console.error("Error al hacer la solicitud: ", error);
-        mostrarError("Falló la conexión con el servidor");
+        mostrarMensaje("Falló la conexión con el servidor");
     }
 });
 
@@ -91,6 +91,37 @@ function renderizarProductos(array) {
     `;
 
     listadoProductos.innerHTML = htmlTabla;
+}
+
+async function eliminarProducto(id) {
+
+    if (!confirm(`¿Estás seguro de que querés eliminar el producto con ID ${id}?`)) {
+        return;
+    }
+    try {
+        const response = await fetch(`${urlBase}/api/products/${id}`, {
+            method: "DELETE"
+        });
+
+        console.log(response);
+
+        const data = await response.json();
+
+
+        // Optimizacion 3: Filtramos errores 400 o 500
+        if (!response.ok) {
+            return mostrarMensaje("error", data.message);
+            // el return hace que esta funcion termine
+        }
+
+        mostrarMensaje("exito", data.message);
+        console.log(data.message);
+        setTimeout(obtenerProductos, 1500);
+
+    } catch (error) {
+        console.error("Error al eliminar un producto: ", error);
+        mostrarMensaje("error", "Error al enviar la informacion");
+    }
 }
 
 obtenerProductos();

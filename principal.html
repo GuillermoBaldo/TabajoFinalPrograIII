@@ -20,9 +20,12 @@
                 <li><a href="carrito.html">Carrito</a></li>
             </ul>
         </nav>
-        <div>
-            <input type="text" name="buscador" id="buscador" placeholder="buscar productos...">
-        </div>
+        <form id="buscador">
+            <label for="idProd">Id producto</label>
+            <input type="number" name="id" id="idProd" min="1" required>
+
+            <input type="submit" value="Consultar">
+        </form>
         <div>
             <button class="boton">Login</button>
         </div>
