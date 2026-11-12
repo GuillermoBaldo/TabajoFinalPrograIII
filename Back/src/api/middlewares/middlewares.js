@@ -32,44 +32,41 @@ const validateId = (req, res, next) => {
 // Middleware (de ruta) para validar la informacion de los formularios
 const validateProduct = (req, res, next) => {
 
-    const categoriasValidas = ["food", "drink"];
+    const categoriasValidas = ["Invierno", "Verano"];
     const errores = [];
 
-    const {name, image, price, category} = req.body;
+    const { nombre, imagen, precio, categoria } = req.body;
 
     // Verificamos que mandamos todos los campos
-    if (!name || !image || !price || !category) {
+    if (!nombre || !imagen || !precio || !categoria) {
         errores.push("Faltan campos requeridos");
     }
 
     // Verificamos el campo nombre
-    if (typeof name !== "string" || name.trim().length < 2) {
+    if (typeof nombre !== "string" || nombre.trim().length < 2) {
         errores.push("El nombre debe tener al menos 2 caracteres");
     }
 
     // Verificamos el campo precio
-    if (typeof price !== "number" || price <= 0) {
-        errores.push("El precio debe ser un numero mayor a 0");
+    if (typeof precio !== "number" || isNaN(precio) || precio <= 0) {
+        errores.push("El precio debe ser un número mayor a 0");
     }
 
-    // No validaremos image porque luego usaremos Multer
-
-    // Verificaremos el campo category
-    if(!categoriasValidas.includes(category)) {
-        errores.push("Categoria invalida");
+    // Verificamos el campo categoria
+    if (!categoriasValidas.includes(categoria)) {
+        errores.push("Categoría inválida (debe ser Invierno o Verano)");
     }
 
-    // Si hay algun error en la lista, directamente devolvemos un 400
+    // Si hay algún error en la lista, devolvemos un 400
     if (errores.length > 0) {
         return res.status(400).json({
-            message: "Datos invalidos",
+            message: "Datos inválidos",
             listaErrores: errores
         });
     }
 
-    next(); // Damos paso al siguiente middleware o a la response
-}
-
+    next();
+};
 
 export {
     loggerUrl,

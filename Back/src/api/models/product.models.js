@@ -10,7 +10,7 @@ import connection from "../database/db.js"; // Importo la conexion a la BBDD
 // Seleccionar todos los productos
 const selectAllProducts = () => {
 
-    const sql = "SELECT id, nombre, precio, imagen, activo FROM productos";
+    const sql = "SELECT id, nombre, precio, imagen, categoria, activo FROM productos";
 
     return connection.query(sql);
 }
@@ -20,7 +20,7 @@ const selectAllProducts = () => {
 // Seleccionar producto por ID
 const selectProductById = (id) => {
 
-    const sql = "SELECT id, nombre, precio, imagen, activo FROM productos WHERE id = ?";
+    const sql = "SELECT id, nombre, precio, imagen, categoria, activo FROM productos WHERE id = ?";
 
     return connection.query(sql, [id]);
 }

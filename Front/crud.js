@@ -147,26 +147,31 @@ btnCrear.addEventListener("click", () => {
     modal.style.display = "flex";
 });
 
-// CERRAR MODAL
+// CERRAR MODAL (con el botón Cancelar)
 btnCerrar.addEventListener("click", () => {
+    formCrear.reset();
     modal.style.display = "none";
 });
 
+// CERRAR MODAL (si hacés clic afuera del cuadro)
+modal.addEventListener("click", event => {
+    if (event.target === modal) {
+        formCrear.reset();
+        modal.style.display = "none";
+    }
+});
 
-// CREAR PRODUCTO
+// CREAR PRODUCTO (POST)
 formCrear.addEventListener("submit", async event => {
-
     event.preventDefault();
 
-    // Obtenemos los datos del formulario
     const formData = new FormData(event.target);
-
-    // Convertimos FormData en objeto
     const formObj = Object.fromEntries(formData.entries());
 
-    // Convertimos los datos
-    formObj.price = Number(formObj.price);
-    formObj.name = formObj.name.trim();
+    // Normalizamos con los nombres exactos de tus inputs en español
+    formObj.precio = Number(formObj.precio);
+    formObj.nombre = formObj.nombre.trim();
+    formObj.imagen = formObj.imagen.trim();
 
     // Validamos los datos
     const errores = validarFormulario(formObj);
@@ -177,7 +182,6 @@ formCrear.addEventListener("submit", async event => {
     }
 
     try {
-
         const response = await fetch(`${urlBase}/api/products`, {
             method: "POST",
             headers: {
@@ -189,20 +193,21 @@ formCrear.addEventListener("submit", async event => {
         const data = await response.json();
 
         if (!response.ok) {
-            alert(data.message);
+            alert(data.message || "Error al crear el producto");
             return;
         }
 
-        alert("Producto creado correctamente");
+        alert(data.message || "Producto creado correctamente");
 
         formCrear.reset();
         modal.style.display = "none";
 
+        // Recargamos la tabla para ver el producto nuevo
         obtenerProductos();
 
     } catch (error) {
         console.error("Error al crear producto:", error);
-        alert("Error al enviar la información");
+        alert("Error al enviar la información al servidor");
     }
 });
 
@@ -210,23 +215,23 @@ function validarFormulario(data) {
 
     const errores = [];
 
-    if (!data.name || !data.image || !data.price || !data.category) {
+    if (!data.nombre || !data.imagen || !data.precio || !data.categoria) {
         errores.push("Faltan campos requeridos");
     }
 
-    if (!data.name || data.name.trim().length < 2) {
+    if (!data.nombre || data.nombre.trim().length < 2) {
         errores.push("El nombre debe tener al menos 2 caracteres");
     }
 
-    if (!data.image) {
+    if (!data.imagen) {
         errores.push("Debe incluirse una imagen");
     }
 
-    if (typeof data.price !== "number" || data.price <= 0) {
+    if (typeof data.precio !== "number" || isNaN(data.precio) || data.precio <= 0) {
         errores.push("El precio debe ser mayor a 0");
     }
 
-    if (!data.category) {
+    if (!data.categoria) {
         errores.push("Debe seleccionar una categoría");
     }
 
