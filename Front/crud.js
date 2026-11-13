@@ -2,9 +2,6 @@ console.log("crud.js cargado correctamente");
 
 const listadoProductos = document.getElementById("lista-productos");
 const buscador = document.getElementById("buscador");
-// const urlBase = "http://localhost:4000"; // Ya está declarada en principal.js
-const formModificador = document.getElementById("contenedor-form");
-
 
 let productosGlobales = [];
 
@@ -107,89 +104,82 @@ function renderizarProductos(array) {
     listadoProductos.innerHTML = htmlTabla;
 }
 
+
+//Modificacion
+const modalModificar = document.getElementById("modal-modificar");
+const formModificarContent = document.getElementById("form-modificar");
+
 function iniciarModificacion(id) {
-    // Buscamos el producto exacto usando el ID que mandó el botón
     const productoEncontrado = productosGlobales.find(prod => prod.id === id);
 
     if (!productoEncontrado) {
         return alert("Error: No se encontró el producto.");
     }
-
-    const confirmacion = confirm(`¿Querés actualizar el producto: ${productoEncontrado.nombre}?`);
-
-    if (!confirmacion) {
-        alert("Modificacion cancelada");
-    } else {
-        // Le pasamos el objeto completo al formulario
-        renderizarFormModificar(productoEncontrado);
-    }
+    renderizarFormModificar(productoEncontrado);
+    // Mostramos el modal
+    modalModificar.style.display = "flex";
 }
 
 function renderizarFormModificar(producto) {
-    let htmlForm = `
-                <h4>Actualizar producto</h4>
+    // Inyectamos los inputs y botones dentro del formulario del modal
+    formModificarContent.innerHTML = `
+        <input type="hidden" name="id" value="${producto.id}">
 
-                <form id="updateProductForm">
+        <label for="categoriaProd">Categoria</label>
+        <select name="categoria" id="categoriaProd" required>
+            <option value="invierno" ${producto.categoria === 'invierno' ? 'selected' : ''}>Invierno</option>
+            <option value="verano" ${producto.categoria === 'verano' ? 'selected' : ''}>Verano</option>
+        </select>
 
-                    <input type="hidden" name="id" value="${producto.id}">
+        <label for="imagenProd">Imagen</label>
+        <input type="text" name="imagen" id="imagenProd" value="${producto.imagen}" required>
 
-                    <label for="categoriaProd">Categoria</label>
-                    <select name="categoria" id="categoriaProd" required>
-                        <option value="invierno">Invierno</option>
-                        <option value="verano">Verano</option>
-                    </select>
+        <label for="nombreProd">Nombre</label>
+        <input type="text" name="nombre" id="nombreProd" value="${producto.nombre}" required>
 
-                    <label for="imagenProd">Imagen</label>
-                    <input type="text" name="imagen" id="imagenProd" value="${producto.imagen}" required>
+        <label for="precioProd">Precio</label>
+        <input type="number" name="precio" id="precioProd" min="1" value="${producto.precio}" required>
 
-                    <label for="nombreProd">Nombre</label>
-                    <input type="text" name="nombre" id="nombreProd" value="${producto.nombre}" required>
+        <label for="activoProd">Activo</label>
+        <select name="activo" id="activoProd" required>
+            <option value="1" ${String(producto.activo) === '1' ? 'selected' : ''}>Activo</option>
+            <option value="0" ${String(producto.activo) === '0' ? 'selected' : ''}>Inactivo</option>
+        </select>
 
-                    <label for="precioProd">Precio</label>
-                    <input type="number" name="precio" id="precioProd" min="1" value="${producto.precio}" required>
+        <div class="botones-modal">
+            <button type="submit">Actualizar producto</button>
+            <button type="button" id="cerrar-modal-modificar">Cancelar</button>
+        </div>
+    `;
 
-                    <label for="activoProd">Activo</label>
-                    <select name="activo" id="activoProd" required>
-                        <option value="1">Activo</option>
-                        <option value="0">Inactivo</option>
-                    </select>
-
-                    <input type="submit" value="Actualizar producto">
-
-                </form>
-            `;
-
-    formModificador.innerHTML = htmlForm;
-
-    const updateProductForm = document.getElementById("updateProductForm");
-
-    updateProductForm.addEventListener("submit", event => {
-        actualizarProducto(event);
+    // Lógica para cerrar el modal con el botón "Cancelar"
+    document.getElementById("cerrar-modal-modificar").addEventListener("click", () => {
+        modalModificar.style.display = "none";
     });
 }
 
-async function actualizarProducto(event) {
-    event.preventDefault(); // Evitamos el envio por defecto del formulario
+// CERRAR MODAL (si hacés clic afuera del cuadro)
+modalModificar.addEventListener("click", event => {
+    if (event.target === modalModificar) {
+        modalModificar.style.display = "none";
+    }
+});
+
+// ACTUALIZAR PRODUCTO (PUT) - Evento asignado al form del modal
+formModificarContent.addEventListener("submit", async event => {
+    event.preventDefault(); 
 
     const formData = new FormData(event.target);
     const formObj = Object.fromEntries(formData.entries());
 
     // Optimizacion 5: Cambiamos algunos datos del formulario
-    formObj.id = Number(formObj.id);           // FALTABA ESTO
-    formObj.activo = Number(formObj.activo);   // FALTABA ESTO
+    formObj.id = Number(formObj.id);
+    formObj.activo = Number(formObj.activo);
     formObj.precio = Number(formObj.precio);
     formObj.nombre = formObj.nombre.trim();
     formObj.categoria = formObj.categoria.trim();
-    console.log(formObj);
-
-    const errores = validarFormulario(formObj);
-    console.log(errores);
-
-    if (errores.length > 0) {
-        return mostrarListaErrores(errores);
-    }
-
-    console.table(formObj);
+    
+    // NOTA: Recuerda validar los datos (validarFormulario) si es necesario
 
     try {
         const response = await fetch(`${urlBase}/api/products`, {
@@ -200,61 +190,29 @@ async function actualizarProducto(event) {
             body: JSON.stringify(formObj)
         });
 
-        console.log(response);
-
         const data = await response.json();
 
         if (!response.ok) {
             console.error(data.message);
+            modalModificar.style.display = "none";
             return mostrarMensaje("error", data.message);
         }
 
-        console.log(data.message);
-
-        // Ocultamos el formulario al terminar
-        formModificador.innerHTML = "";
+        // Ocultamos el modal al terminar exitosamente
+        modalModificar.style.display = "none";
         mostrarMensaje("exito", data.message);
         setTimeout(obtenerProductos, 1500);
 
     } catch (error) {
         console.error("Error al enviar los datos:", error);
+        modalModificar.style.display = "none";
         mostrarMensaje("error", "Error al enviar la informacion");
     }
-}
-
-async function eliminarProducto(id) {
-
-    if (!confirm(`¿Estás seguro de que querés eliminar el producto con ID ${id}?`)) {
-        return;
-    }
-    try {
-        const response = await fetch(`${urlBase}/api/products/${id}`, {
-            method: "DELETE"
-        });
-
-        console.log(response);
-
-        const data = await response.json();
-
-
-        // Optimizacion 3: Filtramos errores 400 o 500
-        if (!response.ok) {
-            return mostrarMensaje("error", data.message);
-            // el return hace que esta funcion termine
-        }
-
-        mostrarMensaje("exito", data.message);
-        console.log(data.message);
-        setTimeout(obtenerProductos, 1500);
-
-    } catch (error) {
-        console.error("Error al eliminar un producto: ", error);
-        mostrarMensaje("error", "Error al enviar la informacion");
-    }
-}
+});
 
 obtenerProductos();
 
+//CREACION
 // NUEVO
 // MODAL CREAR PRODUCTO
 const modal = document.getElementById("modal-crear");
@@ -373,4 +331,37 @@ function validarFormulario(data) {
     }
 
     return errores;
+}
+
+
+//DELETE
+async function eliminarProducto(id) {
+
+    if (!confirm(`¿Estás seguro de que querés eliminar el producto con ID ${id}?`)) {
+        return;
+    }
+    try {
+        const response = await fetch(`${urlBase}/api/products/${id}`, {
+            method: "DELETE"
+        });
+
+        console.log(response);
+
+        const data = await response.json();
+
+
+        // Optimizacion 3: Filtramos errores 400 o 500
+        if (!response.ok) {
+            return mostrarMensaje("error", data.message);
+            // el return hace que esta funcion termine
+        }
+
+        mostrarMensaje("exito", data.message);
+        console.log(data.message);
+        setTimeout(obtenerProductos, 1500);
+
+    } catch (error) {
+        console.error("Error al eliminar un producto: ", error);
+        mostrarMensaje("error", "Error al enviar la informacion");
+    }
 }
