@@ -38,13 +38,13 @@ const validateProduct = (req, res, next) => {
     const {nombre, imagen, precio, categoria} = req.body;
 
     // Verificamos que mandamos todos los campos
-    if (!nombre || !imagen || !precio || !categoria) {
+    
     if (!nombre || !imagen || !precio || !categoria) {
         errores.push("Faltan campos requeridos");
     }
 
     // Verificamos el campo nombre
-    if (typeof nombre !== "string" || nombre.trim().length < 2) {
+    
     if (typeof nombre !== "string" || nombre.trim().length < 2) {
         errores.push("El nombre debe tener al menos 2 caracteres");
     }

@@ -348,17 +348,17 @@ function validarFormulario(data) {
 
     const errores = [];
 
-    if (!data.nombre || !data.imagen || !data.precio || !data.categoria) {
+    
     if (!data.nombre || !data.imagen || !data.precio || !data.categoria) {
         errores.push("Faltan campos requeridos");
     }
 
-    if (!data.nombre || data.nombre.trim().length < 2) {
+    
     if (!data.nombre || data.nombre.trim().length < 2) {
         errores.push("El nombre debe tener al menos 2 caracteres");
     }
 
-    if (!data.imagen) {
+    
     if (!data.imagen) {
         errores.push("Debe incluirse una imagen");
     }
@@ -367,7 +367,7 @@ function validarFormulario(data) {
         errores.push("El precio debe ser mayor a 0");
     }
 
-    if (!data.categoria) {
+    
     if (!data.categoria) {
         errores.push("Debe seleccionar una categoría");
     }

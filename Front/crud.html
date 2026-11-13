@@ -8,62 +8,7 @@
     <script defer src="./crud.js"></script>
     <link rel="stylesheet" href="./css/styles.css">
     <title>tiendaDeRopa</title>
-    <style>
-        /* FONDO DEL MODAL */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #00000080;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        /* CONTENIDO */
-        .contenido-modal {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            width: 350px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .contenido-modal form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .botones-modal {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .botones-modal button {
-            flex: 1;
-        }
-
-        /* MODO OSCURO */
-        body.dark-mode .contenido-modal {
-            background: #1e1e1e;
-            color: white;
-        }
-
-        .contenido-modal select {
-            padding: 12px;
-            border-radius: 7px;
-            border: 1px solid #ddd;
-            font-family: inherit;
-            background: white;
-        }
-    </style>
+    <link rel="stylesheet" href="./css/modal.css">
 
 </head>
 
@@ -115,8 +60,8 @@
                     <label for="categoria">Categoría</label>
                     <select id="categoria" name="categoria" required>
                         <option value="">Seleccionar categoría</option>
-                        <option value="Invierno">Invierno</option>
-                        <option value="Verano">Verano</option>
+                        <option value="invierno">Invierno</option>
+                        <option value="verano">Verano</option>
                     </select>
 
                     <label for="imagen">Imagen (URL)</label>
